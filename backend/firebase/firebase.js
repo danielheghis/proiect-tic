@@ -33,7 +33,7 @@ let firestoreDb;
 const initializeFirebaseApp = () => {
   try {
     app = initializeApp(firebaseConfig);
-    firestoreDb = getFirestore();
+    firestoreDb = getFirestore(app);
     console.log("Firestore initialized:");
     return app;
   } catch (error) {
@@ -47,7 +47,7 @@ const uploadData = async () => {
     key2: "real madrid",
   };
   try {
-    const document = doc(firestoreDb, "receipts", "random-id");
+    const document = doc(firestoreDb, "test", "random-id");
     let dataUpdated = await setDoc(document, dataToUpload);
     return dataUpdated;
   } catch (error) {
@@ -57,7 +57,7 @@ const uploadData = async () => {
 
 const getData = async () => {
   try {
-    const collectionRef = collection(firestoreDb, "receipts");
+    const collectionRef = collection(firestoreDb, "test");
     const finalData = [];
     const q = query(collectionRef);
 
@@ -77,8 +77,13 @@ const getFirebaseApp = () => {
   return app;
 };
 
+const getFirestoreDb = () => {
+  return firestoreDb;
+};
+
 module.exports = {
   initializeFirebaseApp,
+  getFirestoreDb,
   getFirebaseApp,
   uploadData,
   getData,

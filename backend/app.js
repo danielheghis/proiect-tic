@@ -3,11 +3,7 @@ const httpLogger = require("morgan");
 const cors = require("cors");
 const dotenv = require("dotenv");
 dotenv.config();
-const {
-  uploadData,
-  initializeFirebaseApp,
-  getData,
-} = require("./firebase/firebase");
+const { initializeFirebaseApp, getData } = require("./firebase/firebase");
 
 const port = 3000;
 
@@ -19,15 +15,12 @@ app.use(express.json());
 
 initializeFirebaseApp();
 
-app.get("/upload", async (req, res) => {
-  try {
-    await uploadData();
-    res.status(200).send("Data uploaded successfully");
-  } catch (error) {
-    console.error("Error uploading data", error.stack);
-    res.status(500).send("Error uploading data");
-  }
-});
+const playersRoutes = require("./routes/players");
+const matchesRoutes = require("./routes/matches");
+const staffRoutes = require("./routes/staff");
+app.use("/staff", staffRoutes);
+app.use("/players", playersRoutes);
+app.use("/matches", matchesRoutes);
 
 app.get("/get", async (req, res) => {
   try {
