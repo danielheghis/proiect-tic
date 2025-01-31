@@ -7,13 +7,10 @@ const {
   addDoc,
   updateDoc,
   deleteDoc,
-  query,
-  where,
 } = require("firebase/firestore");
 const { getFirestoreDb } = require("../firebase/firebase");
 
 const router = express.Router();
-
 const firestoreDb = getFirestoreDb();
 
 router.get("/", async (req, res) => {
@@ -23,6 +20,7 @@ router.get("/", async (req, res) => {
       id: doc.id,
       ...doc.data(),
     }));
+
     res.status(200).json(matches);
   } catch (error) {
     console.error("Error fetching matches:", error);
@@ -30,34 +28,140 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/scheduled", async (req, res) => {
   try {
-    const { team1, team2, date, location } = req.body;
-    const newMatch = { team1, team2, date, location, status: "scheduled" };
+    const { season, date, home_team, away_team, isHomeTeam } = req.body;
+
+    if (
+      !season ||
+      !date ||
+      !home_team ||
+      !away_team ||
+      isHomeTeam === undefined
+    ) {
+      return res
+        .status(400)
+        .json({ error: "All required fields must be provided" });
+    }
+
+    const newMatch = {
+      season,
+      date,
+      home_team,
+      away_team,
+      home_team_players: { first_eleven: [], bench: [] },
+      away_team_players: { first_eleven: [], bench: [] },
+      status: "scheduled",
+      isHomeTeam,
+    };
+
     const docRef = await addDoc(collection(firestoreDb, "matches"), newMatch);
     res
       .status(201)
-      .json({ message: "Match added successfully", id: docRef.id });
+      .json({ message: "Scheduled match created successfully", id: docRef.id });
   } catch (error) {
-    console.error("Error adding match:", error);
-    res.status(500).json({ error: "Failed to add match" });
+    console.error("Error creating scheduled match:", error);
+    res.status(500).json({ error: "Failed to create scheduled match" });
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.post("/ready", async (req, res) => {
   try {
-    const matchId = req.params.id;
-    const docRef = doc(firestoreDb, "matches", matchId);
-    const matchSnapshot = await getDoc(docRef);
+    const {
+      season,
+      date,
+      home_team,
+      away_team,
+      home_team_players,
+      away_team_players,
+      isHomeTeam,
+    } = req.body;
 
-    if (!matchSnapshot.exists()) {
-      return res.status(404).json({ error: "Match not found" });
+    if (
+      !season ||
+      !date ||
+      !home_team ||
+      !away_team ||
+      !home_team_players ||
+      !away_team_players ||
+      !isHomeTeam
+    ) {
+      return res
+        .status(400)
+        .json({ error: "All required fields must be provided" });
     }
 
-    res.status(200).json({ id: matchSnapshot.id, ...matchSnapshot.data() });
+    const newMatch = {
+      season,
+      date,
+      home_team,
+      away_team,
+      home_team_players,
+      away_team_players,
+      status: "ready",
+      isHomeTeam,
+    };
+
+    const docRef = await addDoc(collection(firestoreDb, "matches"), newMatch);
+    res
+      .status(201)
+      .json({ message: "Ready match created successfully", id: docRef.id });
   } catch (error) {
-    console.error("Error fetching match:", error);
-    res.status(500).json({ error: "Failed to fetch match" });
+    console.error("Error creating ready match:", error);
+    res.status(500).json({ error: "Failed to create ready match" });
+  }
+});
+
+router.post("/finished", async (req, res) => {
+  try {
+    const {
+      season,
+      date,
+      home_team,
+      away_team,
+      home_team_players,
+      away_team_players,
+      goals_home_team,
+      goals_away_team,
+      events,
+    } = req.body;
+
+    if (
+      !season ||
+      !date ||
+      !home_team ||
+      !away_team ||
+      !home_team_players ||
+      !away_team_players ||
+      goals_home_team === undefined ||
+      goals_away_team === undefined ||
+      !events
+    ) {
+      return res
+        .status(400)
+        .json({ error: "All required fields must be provided" });
+    }
+
+    const newMatch = {
+      season,
+      date,
+      home_team,
+      away_team,
+      home_team_players,
+      away_team_players,
+      goals_home_team,
+      goals_away_team,
+      events,
+      status: "finished",
+    };
+
+    const docRef = await addDoc(collection(firestoreDb, "matches"), newMatch);
+    res
+      .status(201)
+      .json({ message: "Finished match created successfully", id: docRef.id });
+  } catch (error) {
+    console.error("Error creating finished match:", error);
+    res.status(500).json({ error: "Failed to create finished match" });
   }
 });
 
@@ -65,8 +169,10 @@ router.put("/:id", async (req, res) => {
   try {
     const matchId = req.params.id;
     const updates = req.body;
-    const docRef = doc(firestoreDb, "matches", matchId);
-    await updateDoc(docRef, updates);
+
+    const matchRef = doc(firestoreDb, "matches", matchId);
+    await updateDoc(matchRef, updates);
+
     res.status(200).json({ message: "Match updated successfully" });
   } catch (error) {
     console.error("Error updating match:", error);
@@ -77,8 +183,10 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const matchId = req.params.id;
-    const docRef = doc(firestoreDb, "matches", matchId);
-    await deleteDoc(docRef);
+
+    const matchRef = doc(firestoreDb, "matches", matchId);
+    await deleteDoc(matchRef);
+
     res.status(200).json({ message: "Match deleted successfully" });
   } catch (error) {
     console.error("Error deleting match:", error);
