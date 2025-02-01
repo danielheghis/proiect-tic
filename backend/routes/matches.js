@@ -12,6 +12,7 @@ const { getFirestoreDb } = require("../firebase/firebase");
 
 const router = express.Router();
 const firestoreDb = getFirestoreDb();
+const opponentTeamMock = require("../utils/opponentTeamMock");
 
 router.get("/", async (req, res) => {
   try {
@@ -30,15 +31,9 @@ router.get("/", async (req, res) => {
 
 router.post("/scheduled", async (req, res) => {
   try {
-    const { season, date, home_team, away_team, isHomeTeam } = req.body;
+    const { season, date, ownTeam } = req.body;
 
-    if (
-      !season ||
-      !date ||
-      !home_team ||
-      !away_team ||
-      isHomeTeam === undefined
-    ) {
+    if (!season || !date || !ownTeam) {
       return res
         .status(400)
         .json({ error: "All required fields must be provided" });
@@ -47,12 +42,9 @@ router.post("/scheduled", async (req, res) => {
     const newMatch = {
       season,
       date,
-      home_team,
-      away_team,
-      home_team_players: { first_eleven: [], bench: [] },
-      away_team_players: { first_eleven: [], bench: [] },
+      ownTeam,
+      opponentTeam: "Real Madrid",
       status: "scheduled",
-      isHomeTeam,
     };
 
     const docRef = await addDoc(collection(firestoreDb, "matches"), newMatch);
@@ -67,25 +59,9 @@ router.post("/scheduled", async (req, res) => {
 
 router.post("/ready", async (req, res) => {
   try {
-    const {
-      season,
-      date,
-      home_team,
-      away_team,
-      home_team_players,
-      away_team_players,
-      isHomeTeam,
-    } = req.body;
+    const { season, date, ownTeam, ownTeamPlayers } = req.body;
 
-    if (
-      !season ||
-      !date ||
-      !home_team ||
-      !away_team ||
-      !home_team_players ||
-      !away_team_players ||
-      !isHomeTeam
-    ) {
+    if (!season || !date || !ownTeam || !ownTeamPlayers) {
       return res
         .status(400)
         .json({ error: "All required fields must be provided" });
@@ -94,12 +70,10 @@ router.post("/ready", async (req, res) => {
     const newMatch = {
       season,
       date,
-      home_team,
-      away_team,
-      home_team_players,
-      away_team_players,
+      ownTeam,
+      ownTeamPlayers,
+      opponentTeam: opponentTeamMock,
       status: "ready",
-      isHomeTeam,
     };
 
     const docRef = await addDoc(collection(firestoreDb, "matches"), newMatch);
@@ -114,27 +88,24 @@ router.post("/ready", async (req, res) => {
 
 router.post("/finished", async (req, res) => {
   try {
+    console.log(opponentTeamMock);
     const {
       season,
       date,
-      home_team,
-      away_team,
-      home_team_players,
-      away_team_players,
-      goals_home_team,
-      goals_away_team,
+      ownTeam,
+      ownTeamPlayers,
+      goals_own_team,
+      goals_opponent_team,
       events,
     } = req.body;
 
     if (
       !season ||
       !date ||
-      !home_team ||
-      !away_team ||
-      !home_team_players ||
-      !away_team_players ||
-      goals_home_team === undefined ||
-      goals_away_team === undefined ||
+      !ownTeam ||
+      !ownTeamPlayers ||
+      goals_own_team === undefined ||
+      goals_opponent_team === undefined ||
       !events
     ) {
       return res
@@ -145,12 +116,11 @@ router.post("/finished", async (req, res) => {
     const newMatch = {
       season,
       date,
-      home_team,
-      away_team,
-      home_team_players,
-      away_team_players,
-      goals_home_team,
-      goals_away_team,
+      ownTeam,
+      ownTeamPlayers,
+      opponentTeam: opponentTeamMock,
+      goals_own_team,
+      goals_opponent_team,
       events,
       status: "finished",
     };

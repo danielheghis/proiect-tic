@@ -1,0 +1,123 @@
+const opponentTeamMock = {
+  name: "Mock FC",
+  players: {
+    first_eleven: [
+      {
+        name: "Kepa Arrizabalaga",
+        position: "Goalkeeper",
+        subbed_out: false,
+        hasYellowCard: false,
+        hasRedCard: false,
+      },
+      {
+        name: "Reece James",
+        position: "Right-back",
+        subbed_out: false,
+        hasYellowCard: true,
+        hasRedCard: false,
+      },
+      {
+        name: "Thiago Silva",
+        position: "Center-back",
+        subbed_out: true,
+        hasYellowCard: false,
+        hasRedCard: false,
+      },
+      {
+        name: "Kalidou Koulibaly",
+        position: "Center-back",
+        subbed_out: false,
+        hasYellowCard: false,
+        hasRedCard: false,
+      },
+      {
+        name: "Ben Chilwell",
+        position: "Left-back",
+        subbed_out: false,
+        hasYellowCard: false,
+        hasRedCard: false,
+      },
+      {
+        name: "N'Golo Kanté",
+        position: "Defensive Midfielder",
+        subbed_out: false,
+        hasYellowCard: false,
+        hasRedCard: false,
+      },
+      {
+        name: "Enzo Fernández",
+        position: "Central Midfielder",
+        subbed_out: false,
+        hasYellowCard: false,
+        hasRedCard: false,
+      },
+      {
+        name: "Mason Mount",
+        position: "Attacking Midfielder",
+        subbed_out: true,
+        hasYellowCard: true,
+        hasRedCard: false,
+      },
+      {
+        name: "Raheem Sterling",
+        position: "Right Winger",
+        subbed_out: false,
+        hasYellowCard: false,
+        hasRedCard: false,
+      },
+      {
+        name: "Kai Havertz",
+        position: "Striker",
+        subbed_out: false,
+        hasYellowCard: false,
+        hasRedCard: false,
+      },
+      {
+        name: "Mykhailo Mudryk",
+        position: "Left Winger",
+        subbed_out: false,
+        hasYellowCard: false,
+        hasRedCard: false,
+      },
+    ],
+    bench: [
+      {
+        name: "Édouard Mendy",
+        position: "Goalkeeper",
+        subbed_in: false,
+        hasYellowCard: false,
+        hasRedCard: false,
+      },
+      {
+        name: "César Azpilicueta",
+        position: "Defender",
+        subbed_in: true,
+        hasYellowCard: false,
+        hasRedCard: false,
+      },
+      {
+        name: "Denis Zakaria",
+        position: "Midfielder",
+        subbed_in: true,
+        hasYellowCard: false,
+        hasRedCard: false,
+      },
+      {
+        name: "Hakim Ziyech",
+        position: "Forward",
+        subbed_in: false,
+        hasYellowCard: false,
+        hasRedCard: false,
+      },
+      {
+        name: "Pierre-Emerick Aubameyang",
+        position: "Striker",
+        subbed_in: false,
+        hasYellowCard: false,
+        hasRedCard: false,
+      },
+    ],
+  },
+};
+
+module.exports = opponentTeamMock;
