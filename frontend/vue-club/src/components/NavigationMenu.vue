@@ -1,6 +1,6 @@
 <template>
   <nav class="bg-emerald-600 text-white shadow-lg">
-    <div class="flex justify-between max-w-7xl mx-auto px-4">
+    <div class="flex justify-between mx-8 px-4">
       <ul class="inline-flex items-center justify-start space-x-8 py-4 mb-4">
         <li>
           <router-link to="/dashboard" class="nav-link">Dashboard</router-link>

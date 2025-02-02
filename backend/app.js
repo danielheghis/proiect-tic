@@ -18,11 +18,11 @@ initializeFirebaseApp();
 const playersRoutes = require("./routes/players");
 const matchesRoutes = require("./routes/matches");
 const staffRoutes = require("./routes/staff");
-app.use("/staff", staffRoutes);
-app.use("/players", playersRoutes);
-app.use("/matches", matchesRoutes);
+app.use("/api/staff", staffRoutes);
+app.use("/api/players", playersRoutes);
+app.use("/api/matches", matchesRoutes);
 
-app.get("/get", async (req, res) => {
+app.get("/api/get", async (req, res) => {
   try {
     const data = await getData();
     res.status(200).send(data);
@@ -36,7 +36,7 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`);
 });
 
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.send("Hello World!");
   console.log("Root endpoint accessed");
 });

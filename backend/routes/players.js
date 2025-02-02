@@ -96,7 +96,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("deletePlayer/:id", async (req, res) => {
   try {
     const playerId = req.params.id;
     const docRef = doc(firestoreDb, "players", playerId);
@@ -128,6 +128,70 @@ router.get("/eligible-players", async (req, res) => {
   } catch (error) {
     console.error("Error fetching eligible players:", error);
     res.status(500).json({ error: "Failed to fetch eligible players" });
+  }
+});
+
+router.delete("/all", async (req, res) => {
+  try {
+    const playersSnapshot = await getDocs(collection(firestoreDb, "players"));
+
+    const deletePromises = playersSnapshot.docs.map((playerDoc) =>
+      deleteDoc(doc(firestoreDb, "players", playerDoc.id))
+    );
+
+    await Promise.all(deletePromises);
+
+    res.status(200).json({ message: "All players deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting players:", error);
+    res.status(500).json({ error: "Failed to delete all players" });
+  }
+});
+
+router.post("/signPlayer", async (req, res) => {
+  try {
+    console.log("Request received:", req.body);
+
+    const { name, age, position, salary, profileImage } = req.body;
+
+    const currentYear = new Date().getFullYear();
+
+    const newPlayer = {
+      name,
+      age,
+      position,
+      salary,
+      profileImage: profileImage || "",
+      isInjured: {
+        injuryDetails: {
+          status: false,
+          type: "",
+          estimatedUntil: "",
+        },
+      },
+      yellowCards: 0,
+      redCards: 0,
+      joiningYear: currentYear,
+      seasonStats: {
+        "2024-2025": {
+          matchesPlayed: 0,
+          goals: 0,
+          assists: 0,
+        },
+      },
+    };
+
+    console.log("Adding player to Firestore...");
+    const docRef = await addDoc(collection(firestoreDb, "players"), newPlayer);
+
+    console.log("Player added successfully:", docRef.id);
+    res.status(201).json({
+      message: "Player signed successfully",
+      id: docRef.id,
+    });
+  } catch (error) {
+    console.error("Error signing player:", error);
+    res.status(500).json({ error: "Failed to sign player" });
   }
 });
 
