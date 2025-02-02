@@ -1,4 +1,5 @@
 const { initializeApp } = require("firebase/app");
+const admin = require("firebase-admin");
 const {
   getFirestore,
   doc,
@@ -26,6 +27,12 @@ const firebaseConfig = {
   messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
   appId: FIREBASE_APP_ID,
 };
+
+const serviceAccount = require("./vue-club-firebase-adminsdk-fbsvc-a1c51da0ba.json");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+const adminAuth = admin.auth();
 
 let app;
 let firestoreDb;
@@ -83,6 +90,7 @@ const getFirestoreDb = () => {
 
 module.exports = {
   initializeFirebaseApp,
+  adminAuth,
   getFirestoreDb,
   getFirebaseApp,
   uploadData,

@@ -5,12 +5,12 @@
       <h2 class="font-bold text-2xl mb-3">Login</h2>
       <form @submit.prevent="handleLogin">
         <div class="form-group">
-          <label for="username">Username</label>
+          <label for="email">Email</label>
           <input
-            type="text"
-            id="username"
-            v-model="username"
-            placeholder="Enter your username"
+            type="email"
+            id="email"
+            v-model="email"
+            placeholder="Enter your email"
             required
           />
         </div>
@@ -31,21 +31,33 @@
 </template>
 
 <script>
+import { auth } from "@/firebase/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import LogoComponent from "./LogoComponent.vue";
+
 export default {
   data() {
     return {
-      username: "",
+      email: "",
       password: "",
     };
   },
   methods: {
-    handleLogin() {
-      if (this.username === "admin" && this.password === "password") {
+    async handleLogin() {
+      try {
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          this.email,
+          this.password
+        );
+        const idToken = await userCredential.user.getIdToken();
+
+        localStorage.setItem("idToken", idToken);
         alert("Login successful!");
         this.$router.push("/dashboard");
-      } else {
-        alert("Invalid username or password");
+      } catch (error) {
+        console.error("Login failed:", error);
+        alert("Invalid email or password");
       }
     },
   },
@@ -69,22 +81,6 @@ export default {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   text-align: center;
   width: 400px;
-}
-
-.header-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  justify-content: center;
-}
-
-.logo {
-  width: 50px;
-  height: auto;
-}
-
-h1 {
-  margin: 0;
 }
 
 .form-group {
@@ -119,12 +115,5 @@ button {
 
 button:hover {
   background-color: #369f6e;
-}
-</style>
-
-<style>
-body {
-  margin: 0;
-  padding: 0;
 }
 </style>

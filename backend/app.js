@@ -3,7 +3,8 @@ const httpLogger = require("morgan");
 const cors = require("cors");
 const dotenv = require("dotenv");
 dotenv.config();
-const { initializeFirebaseApp, getData } = require("./firebase/firebase");
+const { initializeFirebaseApp } = require("./firebase/firebase");
+const authenticateToken = require("./middleware/authenticateToken");
 
 const port = 3000;
 
@@ -18,11 +19,12 @@ initializeFirebaseApp();
 const playersRoutes = require("./routes/players");
 const matchesRoutes = require("./routes/matches");
 const staffRoutes = require("./routes/staff");
-app.use("/api/staff", staffRoutes);
-app.use("/api/players", playersRoutes);
-app.use("/api/matches", matchesRoutes);
 
-app.get("/api/get", async (req, res) => {
+app.use("/api/staff", authenticateToken, staffRoutes);
+app.use("/api/players", authenticateToken, playersRoutes);
+app.use("/api/matches", authenticateToken, matchesRoutes);
+
+app.get("/api/get", authenticateToken, async (req, res) => {
   try {
     const data = await getData();
     res.status(200).send(data);
@@ -39,4 +41,8 @@ app.listen(port, () => {
 app.get("/api", (req, res) => {
   res.send("Hello World!");
   console.log("Root endpoint accessed");
+});
+
+app.get("/api/test-token", authenticateToken, (req, res) => {
+  res.json({ message: "Token valid", user: req.user });
 });

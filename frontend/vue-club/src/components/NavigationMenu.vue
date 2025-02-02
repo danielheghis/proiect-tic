@@ -11,6 +11,9 @@
         <li>
           <router-link to="/stats" class="nav-link">Stats</router-link>
         </li>
+        <li>
+          <button @click="confirmLogout" class="nav-link">Logout</button>
+        </li>
       </ul>
       <LogoComponent class="ml-5" />
     </div>
@@ -19,9 +22,32 @@
 
 <script>
 import LogoComponent from "./LogoComponent.vue";
+import { getAuth, signOut } from "firebase/auth";
+
 export default {
   name: "NavigationMenu",
   components: { LogoComponent },
+  methods: {
+    async confirmLogout() {
+      const isConfirmed = window.confirm("Are you sure you want to log out?");
+
+      if (isConfirmed) {
+        await this.logout();
+      }
+    },
+    async logout() {
+      try {
+        const auth = getAuth();
+        await signOut(auth);
+
+        localStorage.removeItem("idToken");
+
+        this.$router.push("/");
+      } catch (error) {
+        console.error("Error during logout:", error);
+      }
+    },
+  },
 };
 </script>
 

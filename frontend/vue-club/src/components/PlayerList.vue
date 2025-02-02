@@ -40,7 +40,7 @@
                 player.profileImage || require('@/assets/stock_avatar.jpeg')
               "
               alt="Player Photo"
-              class="w-16 h-16 inline"
+              class="w-8 inline"
             />
           </td>
           <td class="border border-gray-300 px-4 py-3">{{ player.name }}</td>
@@ -96,7 +96,12 @@ export default {
   methods: {
     async fetchPlayers() {
       try {
-        const response = await axios.get("/api/players");
+        const idToken = localStorage.getItem("idToken");
+        const response = await axios.get("/api/players", {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        });
         this.players = response.data;
       } catch (error) {
         console.error("Error fetching players:", error);

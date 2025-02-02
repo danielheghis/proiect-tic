@@ -2,6 +2,7 @@
 node_modules
 /dist
 
+vue-club-firebase-adminsdk-fbsvc-a1c51da0ba.json
 # local env files
 .env.local
 .env.*.local
