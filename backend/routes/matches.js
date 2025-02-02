@@ -29,11 +29,28 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/:id", async (req, res) => {
+  try {
+    const matchId = req.params.id;
+    const docRef = doc(firestoreDb, "matches", matchId);
+    const docSnapshot = await getDoc(docRef);
+
+    if (!docSnapshot.exists()) {
+      return res.status(404).json({ error: "Match not found" });
+    }
+
+    res.status(200).json({ id: docSnapshot.id, ...docSnapshot.data() });
+  } catch (error) {
+    console.error("Error fetching match:", error);
+    res.status(500).json({ error: "Failed to fetch match details" });
+  }
+});
+
 router.post("/scheduled", async (req, res) => {
   try {
-    const { season, date, ownTeam } = req.body;
+    const { season, date, opponentTeam } = req.body;
 
-    if (!season || !date || !ownTeam) {
+    if (!season || !date || !opponentTeam) {
       return res
         .status(400)
         .json({ error: "All required fields must be provided" });
@@ -42,8 +59,8 @@ router.post("/scheduled", async (req, res) => {
     const newMatch = {
       season,
       date,
-      ownTeam,
-      opponentTeam: "Real Madrid",
+      ownTeam: "Farul Constanta",
+      opponentTeam: opponentTeam,
       status: "scheduled",
     };
 
@@ -92,7 +109,7 @@ router.post("/finished", async (req, res) => {
     const {
       season,
       date,
-      ownTeam,
+      opponentTeam,
       ownTeamPlayers,
       goals_own_team,
       goals_opponent_team,
@@ -102,7 +119,7 @@ router.post("/finished", async (req, res) => {
     if (
       !season ||
       !date ||
-      !ownTeam ||
+      !opponentTeam ||
       !ownTeamPlayers ||
       goals_own_team === undefined ||
       goals_opponent_team === undefined ||
@@ -116,7 +133,7 @@ router.post("/finished", async (req, res) => {
     const newMatch = {
       season,
       date,
-      ownTeam,
+      opponentTeam,
       ownTeamPlayers,
       opponentTeam: opponentTeamMock,
       goals_own_team,
@@ -161,6 +178,23 @@ router.delete("/:id", async (req, res) => {
   } catch (error) {
     console.error("Error deleting match:", error);
     res.status(500).json({ error: "Failed to delete match" });
+  }
+});
+
+router.delete("/allMatches/delete", async (req, res) => {
+  try {
+    const matchesSnapshot = await getDocs(collection(firestoreDb, "matches"));
+
+    const deletePromises = matchesSnapshot.docs.map((matchDoc) =>
+      deleteDoc(doc(firestoreDb, "matches", matchDoc.id))
+    );
+
+    await Promise.all(deletePromises);
+
+    res.status(200).json({ message: "All matches deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting all matches:", error);
+    res.status(500).json({ error: "Failed to delete all matches." });
   }
 });
 

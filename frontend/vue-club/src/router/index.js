@@ -5,6 +5,8 @@ import ScheduleView from "../views/ScheduleView.vue";
 import StatsView from "../views/StatsView.vue";
 import PlayerDetails from "../views/PlayerDetails.vue";
 import AddNewPlayer from "@/views/AddNewPlayer.vue";
+import MatchScheduledDetails from "@/views/MatchScheduledDetails.vue";
+import MatchFinishedDetails from "@/views/MatchFinishedDetails.vue";
 
 const routes = [
   {
@@ -36,6 +38,21 @@ const routes = [
     path: "/players/sign",
     name: "player-sign",
     component: AddNewPlayer,
+  },
+  {
+    path: "/players/sign",
+    name: "player-sign",
+    component: AddNewPlayer,
+  },
+  {
+    path: "/matches/scheduled/details/:id",
+    name: "match-details-scheduled",
+    component: MatchScheduledDetails,
+  },
+  {
+    path: "/matches/finished/details/:id",
+    name: "match-details-finished",
+    component: MatchFinishedDetails,
   },
 ];
 

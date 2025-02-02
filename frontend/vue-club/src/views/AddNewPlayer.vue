@@ -126,11 +126,14 @@ export default {
           },
         };
 
-        console.log("Sending request to sign player:", newPlayer);
+        const idToken = localStorage.getItem("idToken");
 
-        const response = await axios.post("/api/players/signPlayer", newPlayer);
-
-        console.log("Response received:", response.data);
+        await axios.post("/api/players/signPlayer", newPlayer, {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+            "Content-Type": "application/json",
+          },
+        });
 
         alert("Player signed successfully!");
         this.$router.push("/dashboard");
